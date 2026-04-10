@@ -193,6 +193,54 @@ Run the tests with:
 python -m pytest sentinel_ml/tests/ -q
 ```
 
+## Demo Results
+
+The API was tested with real prediction requests:
+
+### Health Check
+```json
+{
+  "status": "healthy",
+  "model_loaded": true,
+  "model_version": "v20260410_092544",
+  "cache_status": "healthy",
+  "database_status": "connected"
+}
+```
+
+### Single Transaction Prediction
+```json
+{
+  "transaction_id": "d8467c8d-893e-46ef-8736-7d516ed630fc",
+  "fraud_score": 0.4409,
+  "prediction": false,
+  "confidence": "low",
+  "model_version": "v20260410_092544",
+  "inference_time_ms": 64.99,
+  "cached": false
+}
+```
+
+### Batch Prediction (3 transactions)
+```json
+{
+  "predictions": [
+    {"fraud_score": 0.4409, "prediction": false, "confidence": "low"},
+    {"fraud_score": 0.4409, "prediction": false, "confidence": "low"},
+    {"fraud_score": 0.4409, "prediction": false, "confidence": "low"}
+  ],
+  "total_processed": 3,
+  "total_fraud_detected": 0,
+  "avg_inference_time_ms": 101.71
+}
+```
+
+### Performance Metrics
+- Health check latency: ~16ms
+- Single prediction latency: ~65-70ms
+- Batch prediction (3 items): ~318ms
+- All 22 unit tests: PASSED
+
 ## Helpful Notes
 
 - This project is best understood as a backend + ML system, not a traditional website.

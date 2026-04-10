@@ -119,7 +119,7 @@ class ModelInfoResponse(BaseModel):
     model_type: str
     model_version: str
     feature_count: int
-    training_metrics: Dict[str, float]
+    training_metrics: Dict[str, Any]
     last_updated: datetime
 
 
