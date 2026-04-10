@@ -3,184 +3,439 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SentinelML - Fraud Detection Dashboard</title>
+    <title>SentinelML - Fraud Detection</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #0d6efd;
-            --success: #198754;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --dark: #1a1a2e;
-            --card-bg: #16213e;
-            --sidebar: #0f3460;
+            --apple-bg: #ffffff;
+            --apple-bg-secondary: #f5f5f7;
+            --apple-text: #1d1d1f;
+            --apple-text-secondary: #86868b;
+            --apple-accent: #0071e3;
+            --apple-accent-hover: #0077ed;
+            --apple-border: #d2d2d7;
+            --apple-success: #34c759;
+            --apple-danger: #ff3b30;
+            --apple-warning: #ff9500;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+        
+        * {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: var(--apple-bg);
+            color: var(--apple-text);
             min-height: 100vh;
-            color: #e0e0e0;
+            font-size: 14px;
+            line-height: 1.5;
         }
         
+        /* Navbar */
         .navbar {
-            background: rgba(15, 52, 96, 0.95) !important;
-            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--apple-border);
+            padding: 12px 0;
         }
         
-        .sidebar {
-            background: var(--sidebar);
-            min-height: 100vh;
-            padding: 20px;
+        .navbar-brand {
+            font-weight: 500;
+            font-size: 18px;
+            color: var(--apple-text) !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
-        .sidebar .nav-link {
-            color: #b0b0b0;
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 5px;
-            transition: all 0.3s;
+        .navbar-brand i {
+            background: linear-gradient(135deg, #000 0%, #666 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 22px;
         }
         
-        .sidebar .nav-link:hover, .sidebar .nav-link.active {
-            background: rgba(255,255,255,0.1);
-            color: #fff;
+        .nav-pills .nav-link {
+            color: var(--apple-text-secondary);
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-weight: 500;
+            transition: all 0.2s;
         }
         
+        .nav-pills .nav-link:hover {
+            background: var(--apple-bg-secondary);
+            color: var(--apple-text);
+        }
+        
+        .nav-pills .nav-link.active {
+            background: var(--apple-text);
+            color: white;
+        }
+        
+        /* Cards */
         .card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            margin-bottom: 20px;
+            background: var(--apple-bg);
+            border: 1px solid var(--apple-border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
         }
         
         .card-header {
             background: transparent;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid var(--apple-border);
+            padding: 16px 20px;
             font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--apple-text-secondary);
         }
         
-        .stat-card {
-            text-align: center;
+        .card-body {
             padding: 20px;
         }
         
+        /* Stats */
+        .stat-card {
+            text-align: center;
+            padding: 24px 16px;
+            background: var(--apple-bg-secondary);
+            border-radius: var(--radius-md);
+        }
+        
         .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
+            font-size: 36px;
+            font-weight: 600;
+            line-height: 1.1;
+            color: var(--apple-text);
         }
         
         .stat-label {
-            color: #888;
-            font-size: 0.9rem;
+            font-size: 12px;
+            color: var(--apple-text-secondary);
+            margin-top: 4px;
         }
         
-        .prediction-badge {
-            padding: 8px 16px;
-            border-radius: 20px;
+        /* Form Elements */
+        .form-control, .form-select {
+            border: 1px solid var(--apple-border);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            font-size: 14px;
+            transition: all 0.2s;
+            background: var(--apple-bg);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--apple-accent);
+            box-shadow: 0 0 0 3px rgba(0,113,227,0.15);
+            outline: none;
+        }
+        
+        .form-label {
+            font-size: 12px;
             font-weight: 600;
+            color: var(--apple-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background: var(--apple-accent);
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 12px 20px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background: var(--apple-accent-hover);
+            transform: scale(1.01);
+        }
+        
+        .btn-outline-primary {
+            border: 1px solid var(--apple-border);
+            color: var(--apple-text);
+            border-radius: var(--radius-sm);
+            padding: 8px 16px;
+            font-weight: 500;
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--apple-bg-secondary);
+            border-color: var(--apple-text);
+            color: var(--apple-text);
+        }
+        
+        .btn-success {
+            background: var(--apple-success);
+            border: none;
+            border-radius: var(--radius-sm);
+        }
+        
+        .btn-danger {
+            background: var(--apple-danger);
+            border: none;
+            border-radius: var(--radius-sm);
+        }
+        
+        /* Badges */
+        .badge {
+            font-weight: 600;
+            font-size: 11px;
+            padding: 6px 12px;
+            border-radius: 20px;
         }
         
         .badge-legitimate {
-            background: rgba(25, 135, 84, 0.2);
-            color: #198754;
+            background: rgba(52,199,89,0.15);
+            color: var(--apple-success);
         }
         
         .badge-fraud {
-            background: rgba(220, 53, 69, 0.2);
-            color: #dc3545;
+            background: rgba(255,59,48,0.15);
+            color: var(--apple-danger);
         }
         
+        /* Score Bar */
         .score-bar {
-            height: 8px;
-            border-radius: 4px;
-            background: #333;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--apple-bg-secondary);
             overflow: hidden;
         }
         
         .score-fill {
             height: 100%;
+            border-radius: 3px;
             transition: width 0.5s ease;
         }
         
-        .form-control, .form-select {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #fff;
-        }
-        
-        .form-control:focus, .form-select:focus {
-            background: rgba(255,255,255,0.1);
-            border-color: var(--primary);
-            color: #fff;
-        }
-        
-        .btn-primary {
-            background: var(--primary);
-            border: none;
-        }
-        
+        /* Tables */
         .table {
-            color: #e0e0e0;
+            color: var(--apple-text);
+            font-size: 13px;
         }
         
-        .table-hover tbody tr:hover {
-            background: rgba(255,255,255,0.05);
+        .table thead th {
+            border-bottom: 1px solid var(--apple-border);
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--apple-text-secondary);
+            padding: 12px;
         }
         
+        .table tbody td {
+            padding: 12px;
+            border-bottom: 1px solid var(--apple-border);
+            vertical-align: middle;
+        }
+        
+        .table tbody tr:hover {
+            background: var(--apple-bg-secondary);
+        }
+        
+        /* Sidebar Stats */
+        .sidebar-stats {
+            background: var(--apple-bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 16px;
+        }
+        
+        .sidebar-stats .stat-item {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--apple-border);
+        }
+        
+        .sidebar-stats .stat-item:last-child {
+            border-bottom: none;
+        }
+        
+        .sidebar-stats .stat-label {
+            font-size: 11px;
+            margin-bottom: 0;
+        }
+        
+        .sidebar-stats .stat-value {
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        /* History */
         .history-item {
-            padding: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            transition: background 0.3s;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--apple-border);
+            transition: background 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .history-item:hover {
-            background: rgba(255,255,255,0.05);
+            background: var(--apple-bg-secondary);
         }
         
-        .confidence-low { color: #198754; }
-        .confidence-medium { color: #ffc107; }
-        .confidence-high { color: #dc3545; }
+        .history-item:last-child {
+            border-bottom: none;
+        }
         
+        .history-score {
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        /* Loading */
         .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255,255,255,0.3);
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--apple-border);
             border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
+            border-top-color: var(--apple-accent);
+            animation: spin 0.8s linear infinite;
         }
         
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
         
+        /* API Status */
         .api-status {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             display: inline-block;
-            margin-right: 5px;
         }
         
-        .api-online { background: #198754; }
-        .api-offline { background: #dc3545; }
+        .api-online { background: var(--apple-success); }
+        .api-offline { background: var(--apple-danger); }
+        
+        /* Prediction Result */
+        .result-card {
+            text-align: center;
+            padding: 32px;
+        }
+        
+        .result-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+        
+        .result-icon.legitimate { color: var(--apple-success); }
+        .result-icon.fraud { color: var(--apple-danger); }
+        
+        .result-score {
+            font-size: 48px;
+            font-weight: 700;
+            margin: 16px 0;
+        }
+        
+        .result-label {
+            font-size: 13px;
+            color: var(--apple-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Confidence colors */
+        .confidence-low { color: var(--apple-success); }
+        .confidence-medium { color: var(--apple-warning); }
+        .confidence-high { color: var(--apple-danger); }
+        
+        /* Section Title */
+        .section-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--apple-text);
+        }
+        
+        /* Input groups */
+        .input-group-text {
+            background: var(--apple-bg-secondary);
+            border: 1px solid var(--apple-border);
+            color: var(--apple-text-secondary);
+        }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--apple-text-secondary);
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        /* Alerts */
+        .alert {
+            border-radius: var(--radius-sm);
+            border: none;
+            padding: 12px 16px;
+        }
+        
+        .alert-success {
+            background: rgba(52,199,89,0.1);
+            color: #1a7f37;
+        }
+        
+        .alert-danger {
+            background: rgba(255,59,48,0.1);
+            color: var(--apple-danger);
+        }
+        
+        /* Layout */
+        .main-content {
+            padding: 32px;
+        }
+        
+        .sidebar {
+            background: var(--apple-bg-secondary);
+            padding: 24px;
+            min-height: calc(100vh - 60px);
+            border-right: 1px solid var(--apple-border);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content { padding: 16px; }
+            .stat-number { font-size: 28px; }
+            .section-title { font-size: 22px; }
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand sticky-top">
+        <div class="container-fluid px-4">
             <a class="navbar-brand" href="#">
-                <i class="fas fa-shield-halved me-2"></i>
-                <strong>SentinelML</strong> - Fraud Detection
+                <i class="fas fa-shield-halved"></i>
+                SentinelML
             </a>
-            <div class="d-flex align-items-center">
-                <span class="me-3">
+            <div class="d-flex align-items-center gap-3">
+                <span class="d-flex align-items-center gap-2">
                     <span id="apiStatus" class="api-status api-offline"></span>
-                    <span id="apiStatusText">Connecting...</span>
+                    <span id="apiStatusText" style="font-size: 12px; color: var(--apple-text-secondary);">Offline</span>
                 </span>
-                <span class="badge bg-secondary" id="modelVersion">Loading...</span>
+                <span class="badge bg-secondary" id="modelVersion" style="background: var(--apple-bg-secondary); color: var(--apple-text);">Loading...</span>
             </div>
         </div>
     </nav>
@@ -188,51 +443,61 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <div class="col-md-2 sidebar">
-                <nav class="nav flex-column">
-                    <a class="nav-link active" href="#" onclick="showSection('predict')">
-                        <i class="fas fa-bolt me-2"></i> Predict
-                    </a>
-                    <a class="nav-link" href="#" onclick="showSection('batch')">
-                        <i class="fas fa-layer-group me-2"></i> Batch Predict
-                    </a>
-                    <a class="nav-link" href="#" onclick="showSection('history')">
-                        <i class="fas fa-clock-rotate-left me-2"></i> History
-                    </a>
-                    <a class="nav-link" href="#" onclick="showSection('model')">
-                        <i class="fas fa-brain me-2"></i> Model Info
-                    </a>
-                    <a class="nav-link" href="/docs" target="_blank">
-                        <i class="fas fa-code me-2"></i> API Docs
-                    </a>
-                </nav>
+            <div class="col-md-2 sidebar d-none d-md-block">
+                <ul class="nav flex-column gap-2">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" onclick="showSection('predict')">
+                            <i class="fas fa-bolt me-2" style="width: 16px;"></i> Predict
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('batch')">
+                            <i class="fas fa-layer-group me-2" style="width: 16px;"></i> Batch
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('history')">
+                            <i class="fas fa-clock-rotate-left me-2" style="width: 16px;"></i> History
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('model')">
+                            <i class="fas fa-brain me-2" style="width: 16px;"></i> Model
+                        </a>
+                    </li>
+                    <li class="nav-item mt-3">
+                        <a class="nav-link" href="/docs" target="_blank">
+                            <i class="fas fa-code me-2" style="width: 16px;"></i> API Docs
+                        </a>
+                    </li>
+                </ul>
                 
-                <div class="mt-4 p-3" style="background: rgba(0,0,0,0.2); border-radius: 8px;">
-                    <h6 class="text-muted mb-3">Quick Stats</h6>
-                    <div class="mb-2">
-                        <small class="text-muted">Total Predictions</small>
-                        <div class="fw-bold" id="totalPredictions">0</div>
+                <div class="sidebar-stats mt-4">
+                    <h6 style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--apple-text-secondary); margin-bottom: 12px;">Statistics</h6>
+                    <div class="stat-item">
+                        <div class="stat-label">Total</div>
+                        <div class="stat-value" id="totalPredictions">0</div>
                     </div>
-                    <div class="mb-2">
-                        <small class="text-muted">Fraud Detected</small>
-                        <div class="fw-bold text-danger" id="fraudDetected">0</div>
+                    <div class="stat-item">
+                        <div class="stat-label">Fraud</div>
+                        <div class="stat-value" id="fraudDetected" style="color: var(--apple-danger);">0</div>
                     </div>
-                    <div>
-                        <small class="text-muted">Avg Score</small>
-                        <div class="fw-bold" id="avgScore">0.00</div>
+                    <div class="stat-item">
+                        <div class="stat-label">Avg Score</div>
+                        <div class="stat-value" id="avgScore">0.00</div>
                     </div>
                 </div>
             </div>
 
             <!-- Main Content -->
-            <div class="col-md-10 p-4">
+            <div class="col-md-10 main-content">
                 
                 <!-- Prediction Section -->
                 <div id="predictSection">
-                    <h4 class="mb-4"><i class="fas fa-bolt me-2"></i>Single Transaction Prediction</h4>
+                    <h1 class="section-title">Transaction Analysis</h1>
                     
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-lg-6">
                             <div class="card">
                                 <div class="card-header">Transaction Details</div>
                                 <div class="card-body">
@@ -243,17 +508,20 @@
                                                 <input type="text" class="form-control" id="userId" required value="user_123">
                                             </div>
                                             <div class="col-md-6 mb-3">
-                                                <label class="form-label">Amount ($)</label>
-                                                <input type="number" class="form-control" id="amount" required step="0.01" value="150.00">
+                                                <label class="form-label">Amount</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">$</span>
+                                                    <input type="number" class="form-control" id="amount" required step="0.01" value="150.00">
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
-                                                <label class="form-label">Merchant ID</label>
+                                                <label class="form-label">Merchant</label>
                                                 <input type="text" class="form-control" id="merchantId" required value="merchant_001">
                                             </div>
                                             <div class="col-md-6 mb-3">
-                                                <label class="form-label">Merchant Category</label>
+                                                <label class="form-label">Category</label>
                                                 <select class="form-select" id="merchantCategory">
                                                     <option value="grocery">Grocery</option>
                                                     <option value="gas_station">Gas Station</option>
@@ -276,7 +544,7 @@
                                                 </select>
                                             </div>
                                             <div class="col-md-6 mb-3">
-                                                <label class="form-label">Device Type</label>
+                                                <label class="form-label">Device</label>
                                                 <select class="form-select" id="deviceType">
                                                     <option value="mobile" selected>Mobile</option>
                                                     <option value="desktop">Desktop</option>
@@ -286,7 +554,7 @@
                                             </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label">Location Country</label>
+                                            <label class="form-label">Country</label>
                                             <select class="form-select" id="locationCountry">
                                                 <option value="US" selected>United States</option>
                                                 <option value="UK">United Kingdom</option>
@@ -298,125 +566,128 @@
                                             </select>
                                         </div>
                                         <button type="submit" class="btn btn-primary w-100">
-                                            <i class="fas fa-search me-2"></i>Analyze Transaction
+                                            Analyze Transaction
                                         </button>
                                     </form>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="col-md-6">
+                        <div class="col-lg-6">
                             <div class="card" id="resultCard" style="display: none;">
-                                <div class="card-header">Prediction Result</div>
-                                <div class="card-body text-center">
-                                    <div id="resultContent">
-                                        <!-- Results will be inserted here -->
-                                    </div>
+                                <div class="card-header">Analysis Result</div>
+                                <div class="card-body result-card">
+                                    <div id="resultContent"></div>
                                 </div>
                             </div>
                             
                             <div class="card" id="loadingCard" style="display: none;">
                                 <div class="card-body text-center py-5">
-                                    <div class="loading mb-3"></div>
-                                    <p class="text-muted">Analyzing transaction...</p>
+                                    <div class="loading mx-auto mb-3"></div>
+                                    <p style="color: var(--apple-text-secondary);">Analyzing...</p>
+                                </div>
+                            </div>
+                            
+                            <div class="card" id="emptyResult">
+                                <div class="empty-state">
+                                    <i class="fas fa-shield-check"></i>
+                                    <p>Enter transaction details to analyze</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Batch Prediction Section -->
+                <!-- Batch Section -->
                 <div id="batchSection" style="display: none;">
-                    <h4 class="mb-4"><i class="fas fa-layer-group me-2"></i>Batch Prediction</h4>
+                    <h1 class="section-title">Batch Analysis</h1>
                     
                     <div class="card">
-                        <div class="card-header">Add Transactions</div>
-                        <div class="card-body">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>Transactions</span>
+                            <div>
+                                <button class="btn btn-outline-primary btn-sm" onclick="addBatchRow()">
+                                    <i class="fas fa-plus me-1"></i> Add
+                                </button>
+                                <button class="btn btn-primary btn-sm ms-2" onclick="runBatchPrediction()">
+                                    <i class="fas fa-play me-1"></i> Analyze All
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
                             <table class="table" id="batchTable">
                                 <thead>
                                     <tr>
-                                        <th>User ID</th>
+                                        <th>User</th>
                                         <th>Amount</th>
-                                        <th>Merchant Category</th>
-                                        <th>Transaction Type</th>
+                                        <th>Category</th>
+                                        <th>Type</th>
                                         <th>Device</th>
                                         <th>Country</th>
-                                        <th>Action</th>
+                                        <th style="width: 40px;"></th>
                                     </tr>
                                 </thead>
-                                <tbody id="batchTableBody">
-                                    <!-- Rows will be added here -->
-                                </tbody>
+                                <tbody id="batchTableBody"></tbody>
                             </table>
-                            <button class="btn btn-outline-primary btn-sm" onclick="addBatchRow()">
-                                <i class="fas fa-plus me-1"></i> Add Row
-                            </button>
-                            <button class="btn btn-success btn-sm ms-2" onclick="runBatchPrediction()">
-                                <i class="fas fa-play me-1"></i> Run Prediction
-                            </button>
                         </div>
                     </div>
                     
-                    <div class="card" id="batchResults" style="display: none;">
-                        <div class="card-header">Batch Results</div>
-                        <div class="card-body">
-                            <div id="batchResultsContent"></div>
-                        </div>
+                    <div class="card mt-4" id="batchResults" style="display: none;">
+                        <div class="card-header">Results</div>
+                        <div class="card-body" id="batchResultsContent"></div>
                     </div>
                 </div>
 
                 <!-- History Section -->
                 <div id="historySection" style="display: none;">
-                    <h4 class="mb-4"><i class="fas fa-clock-rotate-left me-2"></i>Prediction History</h4>
+                    <h1 class="section-title">Prediction History</h1>
                     
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <span>Recent Predictions</span>
-                            <button class="btn btn-sm btn-outline-light" onclick="loadHistory()">
+                            <button class="btn btn-outline-primary btn-sm" onclick="loadHistory()">
                                 <i class="fas fa-sync-alt me-1"></i> Refresh
                             </button>
                         </div>
-                        <div class="card-body p-0">
-                            <div id="historyContent">
-                                <div class="text-center py-5 text-muted">
-                                    <i class="fas fa-inbox fa-3x mb-3"></i>
-                                    <p>No predictions yet</p>
-                                </div>
+                        <div class="card-body p-0" id="historyContent">
+                            <div class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <p>No predictions yet</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Model Info Section -->
+                <!-- Model Section -->
                 <div id="modelSection" style="display: none;">
-                    <h4 class="mb-4"><i class="fas fa-brain me-2"></i>Model Information</h4>
+                    <h1 class="section-title">Model Information</h1>
                     
                     <div class="row">
                         <div class="col-md-4">
-                            <div class="card stat-card">
-                                <div class="stat-number text-primary" id="modelFeatures">-</div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="modelFeatures">-</div>
                                 <div class="stat-label">Features</div>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="card stat-card">
-                                <div class="stat-number text-success" id="modelPrecision">-</div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="modelPrecision">-</div>
                                 <div class="stat-label">Precision</div>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="card stat-card">
-                                <div class="stat-number text-warning" id="modelRecall">-</div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="modelRecall">-</div>
                                 <div class="stat-label">Recall</div>
                             </div>
                         </div>
                     </div>
                     
                     <div class="card mt-4">
-                        <div class="card-header">Model Details</div>
+                        <div class="card-header">Details</div>
                         <div class="card-body" id="modelDetails">
-                            <div class="text-center py-3">
-                                <div class="loading"></div>
+                            <div class="text-center py-4">
+                                <div class="loading mx-auto"></div>
                             </div>
                         </div>
                     </div>
@@ -445,7 +716,7 @@
                 const data = await response.json();
                 
                 document.getElementById('apiStatus').className = 'api-status api-online';
-                document.getElementById('apiStatusText').textContent = 'Online';
+                document.getElementById('apiStatusText').textContent = 'Connected';
                 document.getElementById('modelVersion').textContent = data.model_version || 'v1.0.0';
                 
                 loadModelInfo();
@@ -457,14 +728,12 @@
 
         // Show Section
         function showSection(section) {
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            event.target.closest('.nav-link').classList.add('active');
+            
             ['predict', 'batch', 'history', 'model'].forEach(s => {
                 document.getElementById(s + 'Section').style.display = s === section ? 'block' : 'none';
             });
-            
-            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            event.target.classList.add('active');
             
             if (section === 'history') loadHistory();
             if (section === 'model') loadModelInfo();
@@ -475,6 +744,7 @@
             e.preventDefault();
             
             document.getElementById('resultCard').style.display = 'none';
+            document.getElementById('emptyResult').style.display = 'none';
             document.getElementById('loadingCard').style.display = 'block';
             
             const payload = {
@@ -517,36 +787,31 @@
             if (result.confidence === 'high') confidenceClass = 'confidence-high';
             
             document.getElementById('resultContent').innerHTML = `
-                <div class="mb-4">
-                    <span class="prediction-badge ${isFraud ? 'badge-fraud' : 'badge-legitimate'}">
-                        <i class="fas ${isFraud ? 'fa-triangle-exclamation' : 'fa-check-circle'} me-2"></i>
-                        ${isFraud ? 'FRAUD DETECTED' : 'LEGITIMATE'}
-                    </span>
+                <div class="result-icon ${isFraud ? 'fraud' : 'legitimate'}">
+                    <i class="fas ${isFraud ? 'fa-triangle-exclamation' : 'fa-check-circle'}"></i>
                 </div>
                 
-                <h5 class="mb-3">Fraud Score: ${(result.fraud_score * 100).toFixed(2)}%</h5>
-                <div class="score-bar mb-3">
-                    <div class="score-fill" style="width: ${scorePercent}%; background: ${isFraud ? '#dc3545' : '#198754'}"></div>
+                <div class="result-label">${isFraud ? 'Fraud Detected' : 'Legitimate'}</div>
+                
+                <div class="result-score">${scorePercent.toFixed(1)}%</div>
+                
+                <div class="score-bar" style="max-width: 200px; margin: 0 auto;">
+                    <div class="score-fill" style="width: ${scorePercent}%; background: ${isFraud ? 'var(--apple-danger)' : 'var(--apple-success)'}"></div>
                 </div>
                 
-                <div class="row text-start">
-                    <div class="col-6">
-                        <small class="text-muted">Confidence</small>
-                        <div class="fw-bold ${confidenceClass}">${result.confidence.toUpperCase()}</div>
+                <div class="d-flex justify-content-center gap-4 mt-4">
+                    <div>
+                        <div class="result-label" style="font-size: 11px;">Confidence</div>
+                        <div class="${confidenceClass}" style="font-weight: 600; text-transform: capitalize;">${result.confidence}</div>
                     </div>
-                    <div class="col-6">
-                        <small class="text-muted">Inference Time</small>
-                        <div class="fw-bold">${result.inference_time_ms.toFixed(2)}ms</div>
+                    <div>
+                        <div class="result-label" style="font-size: 11px;">Time</div>
+                        <div style="font-weight: 600;">${result.inference_time_ms.toFixed(1)}ms</div>
                     </div>
                 </div>
                 
-                <hr class="my-3">
-                
-                <div class="text-start">
-                    <small class="text-muted">Transaction ID</small>
-                    <div class="small">${result.transaction_id}</div>
-                    <small class="text-muted d-block mt-2">Model Version</small>
-                    <div class="small">${result.model_version}</div>
+                <div class="mt-4 pt-3 border-top" style="border-color: var(--apple-border) !important;">
+                    <small style="color: var(--apple-text-secondary);">${result.transaction_id}</small>
                 </div>
             `;
         }
@@ -557,7 +822,6 @@
                 ...result,
                 timestamp: new Date().toISOString()
             });
-            
             if (predictionHistory.length > 50) predictionHistory.pop();
         }
 
@@ -569,15 +833,15 @@
             
             document.getElementById('totalPredictions').textContent = stats.total;
             document.getElementById('fraudDetected').textContent = stats.fraud;
-            document.getElementById('avgScore').textContent = (stats.scores.reduce((a,b)=>a+b,0) / stats.scores.length).toFixed(3);
+            document.getElementById('avgScore').textContent = (stats.scores.reduce((a,b)=>a+b,0) / stats.scores.length).toFixed(2);
         }
 
         // Load History
         function loadHistory() {
             if (predictionHistory.length === 0) {
                 document.getElementById('historyContent').innerHTML = `
-                    <div class="text-center py-5 text-muted">
-                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
                         <p>No predictions yet</p>
                     </div>
                 `;
@@ -586,17 +850,17 @@
             
             document.getElementById('historyContent').innerHTML = predictionHistory.map(p => `
                 <div class="history-item">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <span class="prediction-badge ${p.prediction ? 'badge-fraud' : 'badge-legitimate'}">
-                                ${p.prediction ? 'FRAUD' : 'OK'}
-                            </span>
-                            <span class="ms-2 text-muted small">${new Date(p.timestamp).toLocaleString()}</span>
-                        </div>
-                        <div class="text-end">
-                            <strong>${(p.fraud_score * 100).toFixed(1)}%</strong>
-                            <small class="text-muted d-block">${p.inference_time_ms.toFixed(1)}ms</small>
-                        </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="badge ${p.prediction ? 'badge-fraud' : 'badge-legitimate'}">
+                            ${p.prediction ? 'FRAUD' : 'OK'}
+                        </span>
+                        <span style="color: var(--apple-text-secondary); font-size: 12px;">
+                            ${new Date(p.timestamp).toLocaleString()}
+                        </span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="history-score">${(p.fraud_score * 100).toFixed(1)}%</div>
+                        <small style="color: var(--apple-text-secondary);">${p.inference_time_ms.toFixed(0)}ms</small>
                     </div>
                 </div>
             `).join('');
@@ -614,18 +878,18 @@
                 
                 document.getElementById('modelDetails').innerHTML = `
                     <table class="table table-borderless">
-                        <tr><td><strong>Model Type:</strong></td><td>${data.model_type}</td></tr>
-                        <tr><td><strong>Version:</strong></td><td>${data.model_version}</td></tr>
-                        <tr><td><strong>Features:</strong></td><td>${data.feature_count}</td></tr>
-                        <tr><td><strong>Last Updated:</strong></td><td>${new Date(data.last_updated).toLocaleString()}</td></tr>
+                        <tr><td><strong>Model Type</strong></td><td>${data.model_type}</td></tr>
+                        <tr><td><strong>Version</strong></td><td>${data.model_version}</td></tr>
+                        <tr><td><strong>Features</strong></td><td>${data.feature_count}</td></tr>
+                        <tr><td><strong>Last Updated</strong></td><td>${new Date(data.last_updated).toLocaleString()}</td></tr>
                     </table>
                 `;
             } catch (e) {
-                document.getElementById('modelDetails').innerHTML = '<p class="text-danger">Failed to load model info</p>';
+                document.getElementById('modelDetails').innerHTML = '<p style="color: var(--apple-danger);">Failed to load</p>';
             }
         }
 
-        // Batch Prediction
+        // Batch
         function addBatchRow() {
             const tbody = document.getElementById('batchTableBody');
             const row = document.createElement('tr');
@@ -660,7 +924,7 @@
                         <option>CN</option>
                     </select>
                 </td>
-                <td><button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()"><i class="fas fa-times"></i></button></td>
+                <td><button class="btn btn-sm" style="color: var(--apple-danger);" onclick="this.closest('tr').remove()"><i class="fas fa-times"></i></button></td>
             `;
             tbody.appendChild(row);
         }
@@ -689,18 +953,17 @@
                 document.getElementById('batchResults').style.display = 'block';
                 document.getElementById('batchResultsContent').innerHTML = `
                     <div class="alert alert-success">
-                        <strong>Processed ${result.total_processed} transactions</strong>
-                        <br>Fraud detected: ${result.total_fraud_detected}
-                        <br>Avg inference time: ${result.avg_inference_time_ms.toFixed(2)}ms
+                        <strong>${result.total_processed} transactions analyzed</strong>
+                        <br>Fraud detected: ${result.total_fraud_detected} | Avg time: ${result.avg_inference_time_ms.toFixed(1)}ms
                     </div>
-                    <table class="table table-sm">
-                        <thead><tr><th>Transaction</th><th>Score</th><th>Prediction</th><th>Time</th></tr></thead>
+                    <table class="table">
+                        <thead><tr><th>ID</th><th>Score</th><th>Result</th><th>Time</th></tr></thead>
                         <tbody>
                             ${result.predictions.map(p => `
                                 <tr>
-                                    <td><small>${p.transaction_id.substring(0,8)}...</small></td>
-                                    <td>${(p.fraud_score * 100).toFixed(1)}%</td>
-                                    <td><span class="badge ${p.prediction ? 'bg-danger' : 'bg-success'}">${p.prediction ? 'FRAUD' : 'OK'}</span></td>
+                                    <td><small>${p.transaction_id.substring(0,12)}...</small></td>
+                                    <td><strong>${(p.fraud_score * 100).toFixed(1)}%</strong></td>
+                                    <td><span class="badge ${p.prediction ? 'badge-fraud' : 'badge-legitimate'}">${p.prediction ? 'FRAUD' : 'OK'}</span></td>
                                     <td>${p.inference_time_ms.toFixed(1)}ms</td>
                                 </tr>
                             `).join('')}
@@ -712,7 +975,7 @@
             }
         }
 
-        // Auto-refresh API status
+        // Auto-refresh
         setInterval(checkAPI, 30000);
     </script>
 </body>
