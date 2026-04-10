@@ -15,9 +15,13 @@ from fastapi import (
 )
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field, validator
 import uvicorn
+import os
+from pathlib import Path
 
 from sentinel_ml.config import config
 from sentinel_ml.core.logging import get_logger, LoggerAdapter
@@ -371,6 +375,10 @@ app.add_middleware(
 
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
+# Setup static files and templates
+BASE_DIR = Path(__file__).parent.parent
+app.mount("/static", StaticFiles(directory=str(BASE_DIR / "dashboard")), name="static")
+
 
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
@@ -393,12 +401,14 @@ async def log_requests(request: Request, call_next):
 
 @app.get("/", tags=["Root"])
 async def root():
-    """Root endpoint"""
-    return {
-        "name": "SentinelML Fraud Detection API",
-        "version": "1.0.0",
-        "docs": "/docs"
-    }
+    """Root endpoint - redirect to dashboard"""
+    return FileResponse('dashboard/index.html')
+
+
+@app.get("/dashboard", tags=["Dashboard"])
+async def dashboard():
+    """SentinelML Dashboard"""
+    return FileResponse('dashboard/index.html')
 
 
 @app.get("/health", response_model=HealthResponse, tags=["Health"])

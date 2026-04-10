@@ -23,6 +23,17 @@ This repo does not include a full end-user frontend. The main interface is the A
 
 ## Screenshots
 
+### Web Dashboard (New!)
+![Dashboard](docs/images/dashboard-preview.png)
+
+The built-in web dashboard provides:
+- Real-time single transaction prediction
+- Batch prediction with multiple transactions
+- Prediction history tracking
+- Live statistics (total predictions, fraud detected, avg score)
+- Model information display
+- API status indicator
+
 ### API Overview
 
 ![Swagger overview](docs/images/swagger-overview.png)
@@ -83,8 +94,9 @@ pip install -r requirements.txt
 python -m uvicorn sentinel_ml.api.main:app --host 127.0.0.1 --port 8000
 ```
 
-4. Open the docs.
+4. Open the dashboard or docs.
 
+- Web Dashboard: [http://localhost:8000/](http://localhost:8000/) (or /dashboard)
 - Swagger UI: [http://localhost:8000/docs](http://localhost:8000/docs)
 - Health check: [http://localhost:8000/health](http://localhost:8000/health)
 
