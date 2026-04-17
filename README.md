@@ -1,165 +1,54 @@
-# SentinelML
+﻿# SentinelML
 
-A real-time fraud detection system built with Python, FastAPI, and scikit-learn.
+Fraud detection API. Random Forest on synthetic transaction data.
 
-![Python](https://img.shields.io/badge/Python-3.11+-blue?style=flat&logo=python)
-![FastAPI](https://img.shields.io/badge/FastAPI-green?style=flat)
-![scikit-learn](https://img.shields.io/badge/scikit--learn-orange?style=flat)
-![License](https://img.shields.io/badge/License-MIT-blue?style=flat)
+## Why
 
-## Overview
+I needed a working example of ML model serving with FastAPI, caching, and basic monitoring. This is it.
 
-SentinelML is a complete end-to-end fraud detection system. It includes everything from data generation and feature engineering to model training, API serving, and monitoring.
-
-## Key Features
-
-- **Real-time Inference**: Sub-100ms prediction latency with Redis caching
-- **Feature Engineering**: 25+ engineered features including user behavior patterns, risk scores, and temporal features
-- **Model Training**: Random Forest, Gradient Boosting, and Logistic Regression support
-- **MLflow Integration**: Experiment tracking and model versioning
-- **Web Dashboard**: Beautiful Apple-inspired interface for testing predictions
-- **Docker Support**: Full stack deployment with PostgreSQL, Redis, MLflow, and monitoring tools
-
-## Quick Start
-
-### 1. Install Dependencies
+## Install
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Start the API
+## Run
 
 ```bash
-python -m uvicorn sentinel_ml.api.main:app --reload
+python -m uvicorn sentinel_ml.api.main:app --host 127.0.0.1 --port 8000
 ```
 
-### 3. Open the Dashboard
+## Use
 
-Navigate to: **http://localhost:8000**
-
-## Web Dashboard
-
-The built-in dashboard provides:
-- Single transaction prediction with full form input
-- Batch prediction for multiple transactions
-- Real-time prediction history
-- Live statistics tracking
-- Model information display
-
-## API Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/` | GET | Web dashboard |
-| `/health` | GET | Service health check |
-| `/api/v1/predict` | POST | Single transaction prediction |
-| `/api/v1/predict/batch` | POST | Batch predictions |
-| `/api/v1/model/info` | GET | Model metadata |
-| `/docs` | GET | Swagger API documentation |
-
-## Example Usage
-
-### Single Prediction
-
+Single prediction:
 ```bash
-curl -X POST http://localhost:8000/api/v1/predict \
-  -H "Content-Type: application/json" \
-  -d '{
-    "user_id": "user_123",
-    "amount": 1500.00,
-    "merchant_id": "merchant_001",
-    "merchant_category": "online_shopping",
-    "transaction_type": "purchase",
-    "device_type": "mobile",
-    "location_country": "US"
-  }'
+curl -X POST http://localhost:8000/api/v1/predict -H ''Content-Type: application/json'' -d ''{\"user_id\": \"user_123\",\"amount\": 1500.00,\"merchant_id\": \"merchant_001\",\"merchant_category\": \"online_shopping\",\"transaction_type\": \"purchase\",\"device_type\": \"mobile\",\"location_country\": \"US\"}''
 ```
 
-**Response:**
-
-```json
-{
-  "transaction_id": "abc-123",
-  "fraud_score": 0.45,
-  "prediction": false,
-  "confidence": "low",
-  "model_version": "v20260410_092544",
-  "inference_time_ms": 65.0,
-  "cached": false
-}
-```
-
-### Batch Prediction
-
+Batch prediction:
 ```bash
-curl -X POST http://localhost:8000/api/v1/predict/batch \
-  -H "Content-Type: application/json" \
-  -d '{
-    "transactions": [
-      {"user_id": "user_1", "amount": 50, "merchant_id": "m1", "merchant_category": "grocery", "transaction_type": "purchase"},
-      {"user_id": "user_2", "amount": 5000, "merchant_id": "m2", "merchant_category": "electronics", "transaction_type": "purchase"}
-    ]
-  }'
+curl -X POST http://localhost:8000/api/v1/predict/batch -H ''Content-Type: application/json'' -d ''{\"transactions\": [{\"user_id\": \"user_1\", \"amount\": 50, \"merchant_id\": \"m1\", \"merchant_category\": \"grocery\", \"transaction_type\": \"purchase\"},{\"user_id\": \"user_2\", \"amount\": 5000, \"merchant_id\": \"m2\", \"merchant_category\": \"electronics\", \"transaction_type\": \"purchase\"}]}''
 ```
 
-## Project Structure
-
-```
-sentinel_ml/
-├── api/                 # FastAPI application
-├── config/              # Configuration management
-├── core/                # Database, caching, logging
-├── data/                # Synthetic data generation
-├── features/            # Feature engineering pipeline
-├── models/              # Model training & evaluation
-├── monitoring/          # Drift detection & alerting
-├── pipelines/           # Training & retraining pipelines
-├── dashboard/            # Web UI
-└── tests/               # Unit tests
-```
-
-## Running Tests
-
+Health check:
 ```bash
-pytest sentinel_ml/tests/ -v
+curl http://localhost:8000/health
 ```
 
-**Test Results**: 22/22 tests passing
+## Internals
 
-## Docker Deployment
+Model: scikit-learn RandomForest, class_weight=''balanced''. Trained on synthetic data with known fraud labels.
 
-```bash
-# Start full stack (API, PostgreSQL, Redis, MLflow)
-docker-compose up -d
+Features: 25 features. Temporal (hour, day, weekend). User behavior (txn count, amount avg, velocity). Risk scores (merchant, country). Change detection (device, location).
 
-# Access services
-# API: http://localhost:8000
-# MLflow: http://localhost:5000
-# Grafana: http://localhost:3000
-```
+Caching: Redis, TTL 3600s. Key = transaction_id.
 
-## Technology Stack
+API: FastAPI with async endpoints. Pydantic validation. Background task logging to PostgreSQL.
 
-| Component | Technology |
-|-----------|------------|
-| Web Framework | FastAPI |
-| ML Library | scikit-learn |
-| Database | PostgreSQL |
-| Cache | Redis |
-| Experiment Tracking | MLflow |
-| Containerization | Docker |
+Training: `python scripts/train_model.py`. Generates synthetic data, trains model, saves to artifacts/.
 
-## Learning Topics
-
-This project demonstrates:
-- Building ML pipelines for production
-- Creating REST APIs for ML models
-- Implementing caching strategies
-- Database design for ML systems
-- Model monitoring and drift detection
-- Docker containerization
+Tests: `pytest sentinel_ml/tests/ -v`. 22 tests.
 
 ## License
 
-MIT License - Feel free to use this for learning or as a starting point for your own projects.
+MIT
