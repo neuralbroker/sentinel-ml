@@ -5,7 +5,7 @@ description = "A real-time fraud detection system"
 authors = ["Your Name"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/sajadkoder/sentinel-ml"
+homepage = "https://github.com/neuralbroker/sentinel-ml"
 
 [tool.poetry.dependencies]
 python = "^3.11"
